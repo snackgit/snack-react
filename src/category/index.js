@@ -26,30 +26,64 @@ function CategoryPage() {
       });
   }, [categoryId]);
 
-  const getCategoryTitle = () => {
+  const getCategoryInfo = () => {
     const categoryMap = {
-      snack: "추억의 불량식품",
-      japan: "일본간식",
-      china: "중국간식",
-      asia: "동남아간식",
-      europe: "유럽간식",
-      usa: "미국간식",
-      ramen: "라면/컵라면",
-      drink: "음료/커피",
-      box: "박스상품"
+      snack: { title: "추억의 불량식품", link: "" },
+      japan: { 
+        title: "일본간식", 
+        link: "https://itwlsmdwjdqhrhdgkrrhk-68290.waveon.me/" 
+      },
+      china: { 
+        title: "중국간식", 
+        link: "https://itwlsmdwjdqhrhdgkrrhk-68297.waveon.me/" 
+      },
+      asia: { 
+        title: "동남아간식", 
+        link: "https://itwlsmdwjdqhrhdgkrrhk-68300.waveon.me/" 
+      },
+      europe: { 
+        title: "유럽간식", 
+        link: "https://itwlsmdwjdqhrhdgkrrhk-68299.waveon.me/" 
+      },
+      usa: { 
+        title: "미국간식", 
+        link: "https://itwlsmdwjdqhrhdgkrrhk-68296.waveon.me/" 
+      },
+      ramen: { title: "라면/컵라면", link: "" },
+      drink: { title: "음료/커피", link: "" },
+      box: { title: "박스상품", link: "" }
     };
-    return categoryMap[categoryId] || "상품 목록";
+    return categoryMap[categoryId] || { title: "상품 목록", link: "" };
   };
+
+  const categoryInfo = getCategoryInfo();
 
   return (
     <div>
-      <h1 style={{ 
+      <div style={{ 
         padding: "20px", 
         borderBottom: "1px solid #e8e8e8",
-        margin: "0 0 20px 0"
+        margin: "0 0 20px 0",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px"
       }}>
-        {getCategoryTitle()}
-      </h1>
+        <h1 style={{ margin: 0 }}>{categoryInfo.title}</h1>
+        {categoryInfo.link && (
+          <a 
+            href={categoryInfo.link} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{
+              textDecoration: "none",
+              color: "#007bff",
+              fontSize: "14px"
+            }}
+          >
+            간식 문화 퀴즈 풀어보기~  →
+          </a>
+        )}
+      </div>
       <div id="product-list" style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",

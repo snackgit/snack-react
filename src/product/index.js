@@ -1,98 +1,86 @@
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import "./index.css";
 import { API_URL } from "../config/constants";
 import dayjs from "dayjs";
-import { Button, message, Spin } from "antd";
-import ProductCard from "../components/productCard";
+import { Button, message, Spin, Rate } from "antd";
 
-function ProductPage() {
+function ProductPage({ userNickname }) {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
-  const [products, setProducts] = useState([]);
-  const getProduct = () => {
-    axios
-      .get(`${API_URL}/products/${id}`)
-      .then((result) => {
-        setProduct(result.data.product);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-  const getRecommendations = () => {
-    axios
-      .get(`${API_URL}/products/${id}/recommendation`)
-      .then((result) => {
-        setProducts(result.data.products);
-        console.log(result.data.products);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
+  const [reviews, setReviews] = useState([]);
+
   useEffect(() => {
     getProduct();
-    getRecommendations();
+    getReviews();
   }, [id]);
 
-  if (product === null) {
-    return (
-      <div style={{ textAlign: "center", paddingTop: 32 }}>
-        <Spin size="large" />
-      </div>
-    );
-  }
-
-  const onClickPurchase = () => {
-    axios
-      .post(`${API_URL}/purchase/${id}`)
-      .then((result) => {
-        message.info("구매가 완료되었습니다");
-        getProduct();
-      })
-      .catch((error) => {
-        message.error(`에러가 발생했습니다. ${error.message}`);
-      });
+  const getProduct = async () => {
+    try {
+      const result = await axios.get(`${API_URL}/products/${id}`);
+      setProduct(result.data.product);
+    } catch (error) {
+      console.error("상품 정보 로드 실패:", error);
+      message.error("상품 정보를 불러오는데 실패했습니다.");
+    }
   };
 
+  const getReviews = async () => {
+    try {
+      const result = await axios.get(`${API_URL}/products/${id}/reviews`);
+      const serverReviews = result.data.reviews || [];
+      
+      // 로컬 스토리지의 리뷰도 가져와서 합치기
+      const userData = JSON.parse(localStorage.getItem(userNickname)) || {};
+      const userReviews = userData.reviews || [];
+      const productUserReviews = userReviews.filter(review => review.productId === id);
+      
+      const allReviews = [...serverReviews, ...productUserReviews];
+      
+      // 중복 제거 및 날짜순 정렬
+      const uniqueReviews = allReviews.filter((review, index, self) =>
+        index === self.findIndex((t) => t.id === review.id)
+      ).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+      setReviews(uniqueReviews);
+    } catch (error) {
+      console.error("리뷰 로드 실패:", error);
+      message.error("리뷰를 불러오는데 실패했습니다.");
+    }
+  };
+
+  if (!product) {
+    return <Spin size="large" />;
+  }
+
   return (
-    <div>
-      <div id="image-box">
-        <img src={`${API_URL}/${product.imageUrl}`} alt = '카메라 이미지' />
+    <div className="product-page">
+      <div className="product-info">
+        <h2>{product.name}</h2>
+        <p>{product.price}원</p>
+        <p>{product.description}</p>
       </div>
-      <div id="profile-box">
-        <img src="/images/icons/avatar.png" alt = '프로필 아이콘'/>
-        <span>{product.seller}</span>
-      </div>
-      <div id="contents-box">
-        <div id="name">{product.name}</div>
-        <div id="price">{product.price}원</div>
-        <div id="createdAt">
-          {dayjs(product.createdAt).format("YYYY년 MM월 DD일")}
-        </div>
-        <Button
-          id="purchase-button"
-          size="large"
-          type="primary"
-          danger
-          onClick={onClickPurchase}
-          disabled={product.soldout === 1}
-        >
-          구매하기
-        </Button>
-        <div id="description-box">
-          <pre id="description">{product.description} </pre>
-        </div>
-        <div>
-          <h1>추천 상품</h1>
-          <div style={{ display: "flex", flexWrap: "wrap" }}>
-            {products.map((product, index) => {
-              return <ProductCard key={index} product={product} />;
-            })}
+
+      <div className="reviews-section">
+        <h3>상품 후기</h3>
+        {reviews.length > 0 ? (
+          <div className="reviews-list">
+            {reviews.map((review, index) => (
+              <div key={index} className="review-item">
+                <Rate disabled defaultValue={review.rating} />
+                <p className="review-comment">{review.comment}</p>
+                <p className="review-date">
+                  {dayjs(review.createdAt).format("YYYY년 MM월 DD일")}
+                </p>
+                <p className="review-user">작성자: {review.userId}</p>
+              </div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <p>아직 작성된 후기가 없습니다.</p>
+        )}
       </div>
     </div>
   );

@@ -3,15 +3,16 @@ name: Deploy React App
 on:
   push:
     branches:
-      - dev
+      - jiwoo # dev 브랜치에 푸시할 때마다 실행
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
     steps:
-      - uses: actions/checkout@v3
-      
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -19,7 +20,11 @@ jobs:
           
       - name: Install Dependencies
         run: npm install
-        
+
+      - name: Set Backend URL as Environment Variable
+        run: |
+          echo "REACT_APP_BACKEND_URL=${{ secrets.BACKEND_URL }}" >> $GITHUB_ENV
+
       - name: Build
         run: npm run build
         

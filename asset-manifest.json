@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/snack-react/static/css/main.c2f7d530.css",
+    "main.js": "/snack-react/static/js/main.41877b7f.js",
+    "static/js/453.e7428ca7.chunk.js": "/snack-react/static/js/453.e7428ca7.chunk.js",
+    "index.html": "/snack-react/index.html",
+    "main.c2f7d530.css.map": "/snack-react/static/css/main.c2f7d530.css.map",
+    "main.41877b7f.js.map": "/snack-react/static/js/main.41877b7f.js.map",
+    "453.e7428ca7.chunk.js.map": "/snack-react/static/js/453.e7428ca7.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c2f7d530.css",
+    "static/js/main.41877b7f.js"
+  ]
+}

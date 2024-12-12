@@ -11,7 +11,7 @@ import CategoryPage from "./category/index.js";
 import LoginPage from "./login";
 import MyPage from "./mypage";
 import NewProductsPage from "./new";
-import BestPage from "./best";
+import QAForm from "./QAForm/index.js";
 
 function App() {
   const navigate = useNavigate();
@@ -119,7 +119,7 @@ function App() {
               )}
             </div>
             <Link to="/new" style={{ fontSize: "16px", color: "#333", textDecoration: "none" }}>신상품</Link>
-            <Link to="/best" style={{ fontSize: "16px", color: "#333", textDecoration: "none" }}>베스트</Link>
+            <Link to="/QAForm" style={{ fontSize: "16px", color: "#333", textDecoration: "none" }}>Q & A</Link>
             <a
               href="https://itwlsmdwjdqhrhdgkrrhk-68217.waveon.me/"
               target="_blank"
@@ -158,9 +158,19 @@ function App() {
           <Route path="/products/:id" element={<ProductPage userNickname={userNickname} />} />
           <Route path="/upload" element={<UploadPage />} />
           <Route path="/login" element={<LoginPage setIsLoggedIn={setIsLoggedIn} />} />
-          <Route path="/best" element={<BestPage />} />
           <Route path="/mypage" element={<MyPage userNickname={userNickname} isLoggedIn={isLoggedIn} />} />
           <Route path="/new" element={<NewProductsPage />} />
+          <Route 
+  path="/QAForm" 
+  element={
+    <QAForm 
+      isLoggedIn={isLoggedIn} 
+      userRole={userRole} 
+      userNickname={userNickname} 
+    />
+  } 
+/>
+
         </Routes>
       </div>
       <div id="footer"></div>
